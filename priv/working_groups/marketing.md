@@ -10,7 +10,7 @@
       "name": "Bryan Paxton"
     },
     {
-      "image": "members/profile-placeholder.png",
+      "image": "members/benoit-chesneau.jpg",
       "name": "Benoit Chesneau"
     },
     {
@@ -24,10 +24,6 @@
     {
       "image": "members/desmond-bowe.png",
       "name": "Desmond Bowe"
-    },
-    {
-      "image": "members/brian-cardella.jpg",
-      "name": "Brian Cardella"
     },
     {
       "image": "members/profile-placeholder.png",
@@ -44,6 +40,14 @@
     {
       "image": "members/profile-placeholder.png",
       "name": "Magdalena Pokorska"
+    },
+    {
+      "image": "members/ghislaine-guerin.png",
+      "name": "Ghislaine Guerin"
+    },
+    {
+      "image": "members/profile-placeholder.png",
+      "name": "Matt McKinney"
     }
   ],
   "name": "Marketing",
@@ -65,7 +69,7 @@ and its activities, and to increase engagement in the foundation.
 
 ## Benefits to the community
 - The BEAM community will benefit from a coordinated marketing effort of the EEF’s activities.
-- Companies and organizations choosing technologies to adopt will be more likely to choose a BEAM 
+- Companies and organizations choosing technologies to adopt will be more likely to choose a BEAM
 technology if there is a comprehensive marketing strategy.
 - Fostering excitement further encourages community growth
 

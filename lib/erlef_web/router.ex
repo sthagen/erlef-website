@@ -1,12 +1,12 @@
 defmodule ErlefWeb.Router do
   use ErlefWeb, :router
 
-  @trusted_sources ~w(www.google.com www.googletagmanager.com  www.google-analytics.com 
-    fonts.gstatic.com fonts.googleapis.com use.fontawesome.com 
-    stackpath.bootstrapcdn.com use.fontawesome.com platform.twitter.com 
-    code.jquery.com platform.twitter.com syndication.twitter.com 
-    syndication.twitter.com/settings cdn.syndication.twimg.com 
-    licensebuttons.net i.creativecommons.org platform.twitter.com 
+  @trusted_sources ~w(www.google.com www.googletagmanager.com  www.google-analytics.com
+    fonts.gstatic.com fonts.googleapis.com use.fontawesome.com
+    stackpath.bootstrapcdn.com use.fontawesome.com platform.twitter.com
+    code.jquery.com platform.twitter.com syndication.twitter.com
+    syndication.twitter.com/settings cdn.syndication.twimg.com
+    licensebuttons.net i.creativecommons.org platform.twitter.com
     pbs.twimg.com syndication.twitter.com www.googleapis.com
   )
 
@@ -19,17 +19,14 @@ defmodule ErlefWeb.Router do
     plug :protect_from_forgery
 
     plug :put_secure_browser_headers, %{
-      "content-security-policy" => " default-src 'self' 'unsafe-eval' 'unsafe-inline' data: #{@default_source}"
+      "content-security-policy" =>
+        " default-src 'self' 'unsafe-eval' 'unsafe-inline' data: #{@default_source}"
     }
 
     plug ErlefWeb.Plug.JsonEvents
   end
 
-  pipeline :api do
-    plug :accepts, ["json"]
-  end
-
-  if Erlef.Config.env() == :dev do
+  if Erlef.is_env?(:dev) do
     scope "/dev" do
       pipe_through [:browser]
       forward "/mailbox", Plug.Swoosh.MailboxPreview, base_path: "/dev/mailbox"
@@ -40,7 +37,6 @@ defmodule ErlefWeb.Router do
     pipe_through :browser
 
     get "/", PageController, :index
-    get "/about", PageController, :about
     get "/bylaws", PageController, :bylaws
     get "/board_members", PageController, :board_members
     get "/contact", PageController, :contact
@@ -57,5 +53,4 @@ defmodule ErlefWeb.Router do
     resources "/wg", WorkingGroupController, only: [:index, :show]
     resources "/grants", GrantController, only: [:index, :create]
   end
-
 end

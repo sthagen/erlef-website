@@ -20,16 +20,18 @@ defmodule Mix.Tasks.Eef.Gen.Post do
 
   @doc false
   def run(args) do
-    switches = [author: :string, title: :string]
-    aliases = [a: :author, t: :title]
+    switches = [author: :string, title: :string, path: :string, excerpt: :string, body: :string]
+    aliases = [a: :author, t: :title, p: :path, e: :excerpt, b: :body]
 
     case OptionParser.parse(args, switches: switches, aliases: aliases) do
       {options, [blog, slug], _invalid} ->
         title = Keyword.get(options, :title, "Title")
         author = Keyword.get(options, :author, "Author")
         datetime = DateTime.utc_now()
-        path = root_path(blog)
+        path = Keyword.get(options, :path, root_path(blog))
         file = Path.join(path, "#{format_datetime(datetime)}_#{slug}.md")
+        excerpt = Keyword.get(options, :excerpt, default_excerpt())
+        body = Keyword.get(options, :body, default_body())
 
         create_file(
           file,
@@ -38,9 +40,13 @@ defmodule Mix.Tasks.Eef.Gen.Post do
             slug: slug,
             datetime: datetime,
             author: author,
-            category: blog
+            category: blog,
+            excerpt: excerpt,
+            body: body
           )
         )
+
+        file
 
       _ ->
         Mix.raise(
@@ -51,7 +57,10 @@ defmodule Mix.Tasks.Eef.Gen.Post do
   end
 
   defp root_path(blog) do
-    "priv/posts/#{blog}"
+    case Erlef.is_env?(:test) do
+      true -> "priv/test/posts/#{blog}"
+      false -> "priv/posts/#{blog}"
+    end
   end
 
   defp format_datetime(datetime) do
@@ -72,6 +81,12 @@ defmodule Mix.Tasks.Eef.Gen.Post do
     |> String.pad_leading(2, "0")
   end
 
+  defp default_excerpt, do: "Post excerpt goes here"
+
+  defp default_body,
+    do:
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua"
+
   embed_template(:post, """
   {
     "title": "<%= @title %>",
@@ -81,8 +96,8 @@ defmodule Mix.Tasks.Eef.Gen.Post do
     "datetime": "<%= DateTime.to_iso8601(@datetime) %>"
   }
   ---
-  Post excerpt goes here
+  <%= @excerpt %>
   ---
-  Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Varius sit amet mattis vulputate enim nulla aliquet. Purus in massa tempor nec feugiat. Enim lobortis scelerisque fermentum dui faucibus in ornare. In nulla posuere sollicitudin aliquam ultrices sagittis orci.
+  <%= @body %>
   """)
 end

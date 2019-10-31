@@ -9,6 +9,8 @@ defmodule Erlef.MixProject do
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
+      test_coverage: [tool: ExCoveralls],
+      preferred_cli_env: [coveralls: :test, "coveralls.html": :test],
       deps: deps(),
       aliases: aliases(),
       dialyzer: dialyzer_opts()
@@ -42,6 +44,7 @@ defmodule Erlef.MixProject do
       {:jason, "~> 1.1", override: true},
       {:plug_cowboy, "~> 2.1"},
       {:earmark, "~> 1.3.2", override: true},
+      {:excoveralls, "~> 0.12.0"},
       {:timex, "~> 3.6"},
       {:swoosh, "~> 0.23.3"},
       {:phoenix_swoosh, "~> 0.2.0"},
@@ -54,8 +57,30 @@ defmodule Erlef.MixProject do
 
   defp aliases do
     [
-      test: ["compile --warnings-as-errors", "credo", "test"]
+      test: ["compile --warnings-as-errors", "test"],
+      "eef.gen.newsletter": [&gen_newsletter/1]
     ]
+  end
+
+  defp gen_newsletter(_arg) do
+    id = 1 + (Path.wildcard("priv/posts/newsletter/**/*.md") |> Enum.count())
+
+    args = [
+      "newsletter",
+      "newsletter-#{id}",
+      "-a",
+      "eef",
+      "-t",
+      "EEF Newsletter ##{id}",
+      "-e",
+      "",
+      "-b",
+      default_newsletter_body(),
+      "-p",
+      "priv/posts/newsletter"
+    ]
+
+    Mix.Task.run("eef.gen.post", args)
   end
 
   defp dialyzer_opts do
@@ -67,5 +92,26 @@ defmodule Erlef.MixProject do
         {Credo.Check.Warning.LazyLogging, false}
       ]
     ]
+  end
+
+  defp default_newsletter_body do
+    """
+    ## In This Newsletter
+    ------------------------------------------------------------
+    Some text
+
+    ## Working Group Water Cooler
+    ------------------------------------------------------------
+    Some text
+
+    ## Ecosystem News
+    ------------------------------------------------------------
+    Some text
+
+    ## See you Soon!
+    ------------------------------------------------------------
+    Some text
+
+    """
   end
 end
