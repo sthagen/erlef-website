@@ -5,7 +5,7 @@ defmodule Erlef.MixProject do
     [
       app: :erlef,
       version: "0.1.0",
-      elixir: "~> 1.6",
+      elixir: "~> 1.10.1",
       elixirc_paths: elixirc_paths(Mix.env()),
       compilers: [:phoenix, :gettext] ++ Mix.compilers(),
       start_permanent: Mix.env() == :prod,
@@ -37,9 +37,12 @@ defmodule Erlef.MixProject do
   defp deps do
     [
       {:phoenix, "~> 1.4.13"},
+      {:phoenix_ecto, "~> 4.1"},
       {:phoenix_pubsub, "~> 1.1"},
       {:phoenix_html, "~> 2.14"},
       {:phoenix_live_reload, "~> 1.2", only: :dev},
+      {:ecto_sql, "~> 3.1"},
+      {:postgrex, ">= 0.0.0"},
       {:gettext, "~> 0.17.4"},
       {:jason, "~> 1.1", override: true},
       {:plug_cowboy, "~> 2.1"},
@@ -49,7 +52,7 @@ defmodule Erlef.MixProject do
       {:swoosh, "~> 0.24.4"},
       {:phoenix_swoosh, "~> 0.2.0"},
       {:gen_smtp, "~> 0.15.0"},
-      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev], runtime: false},
+      {:dialyxir, "~> 1.0.0-rc.7", only: [:dev, :test], runtime: false},
       {:credo, "~> 1.2.2", only: [:dev, :test], runtime: false},
       {:etso, "~> 0.1.1"},
       {:plug_attack, "~> 0.4.2"}
@@ -58,7 +61,18 @@ defmodule Erlef.MixProject do
 
   defp aliases do
     [
-      test: ["compile --warnings-as-errors", "test"],
+      "ecto.setup": [
+        "ecto.create",
+        "ecto.migrate",
+        "run priv/repo/seeds.exs"
+      ],
+      "ecto.reset": ["ecto.drop", "ecto.setup"],
+      test: [
+        "compile --warnings-as-errors",
+        "ecto.create --quiet",
+        "ecto.migrate --quiet",
+        "test"
+      ],
       "eef.gen.newsletter": [&gen_newsletter/1]
     ]
   end
@@ -91,7 +105,8 @@ defmodule Erlef.MixProject do
       checks: [
         {Credo.Check.Refactor.MapInto, false},
         {Credo.Check.Warning.LazyLogging, false}
-      ]
+      ],
+      plt_file: {:no_warn, "priv/plts/erlef.plt"}
     ]
   end
 
