@@ -28,7 +28,6 @@ config :phoenix, :json_library, Jason
 config :erlef, :repo_imports, [
   {"/posts/**/*.md", Erlef.Blog},
   {"/events/**/*.md", Erlef.Event},
-  {"/events/**/*.md", Erlef.Data.Event},
   {"/working_groups/**/*.md", Erlef.WorkingGroup}
 ]
 
@@ -50,6 +49,12 @@ config :erlef, :wild_apricot_base_auth_url, "https://oauth.wildapricot.org"
 
 config :erlef,
   ecto_repos: [Erlef.Data.Repo]
+
+config :extwitter, :oauth,
+  consumer_key: System.get_env("TWITTER_CONSUMER_KEY"),
+  consumer_secret: System.get_env("TWITTER_CONSUMER_SECRET"),
+  access_token: System.get_env("TWITTER_ACCESS_TOKEN"),
+  access_token_secret: System.get_env("TWITTER_ACCESS_TOKEN_SECRET")
 
 # Import environment specific config. This must remain at the bottom
 # of this file so it overrides the configuration defined above.
