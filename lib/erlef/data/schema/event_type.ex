@@ -2,7 +2,6 @@ defmodule Erlef.Data.Schema.EventType do
   @moduledoc """
   Erlef.Data.Schema.EventType schema
   """
-
   use Ecto.Schema
   import Ecto.Changeset
 
@@ -15,5 +14,9 @@ defmodule Erlef.Data.Schema.EventType do
     struct
     |> cast(params, [:name])
     |> validate_required([:name])
+  end
+
+  def get(type) do
+    Erlef.Data.Repo.get_by!(__MODULE__, name: Atom.to_string(type))
   end
 end

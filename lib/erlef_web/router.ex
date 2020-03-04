@@ -8,6 +8,7 @@ defmodule ErlefWeb.Router do
     syndication.twitter.com/settings cdn.syndication.twimg.com
     licensebuttons.net i.creativecommons.org platform.twitter.com
     pbs.twimg.com syndication.twitter.com www.googleapis.com use.typekit.net p.typekit.net
+    event-org-images.s3.us-east-2.amazonaws.com
   )
 
   @default_source Enum.join(@trusted_sources, " ")
@@ -65,7 +66,8 @@ defmodule ErlefWeb.Router do
     get "/news/:topic", BlogController, :index, as: :news
     get "/news/:topic/:id", BlogController, :show, as: :news
 
-    resources "/events", EventController, only: [:index, :show]
+    get "/events/:slug", EventController, :show
+    get "/events", EventController, :index
     resources "/wg", WorkingGroupController, only: [:index, :show]
     resources "/stipends", StipendController, only: [:index, :create]
 
@@ -73,7 +75,9 @@ defmodule ErlefWeb.Router do
 
     scope "/admin", Admin, as: :admin do
       pipe_through [:admin_required]
-      get "/", EventController, :index
+      get "/", DashboardController, :index
+      resources "/events", EventController, only: [:index, :show]
+      put "/events/:id", EventController, :approve
     end
   end
 
