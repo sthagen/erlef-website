@@ -3,7 +3,7 @@
   "email": null,
   "formed": "2019-04-30",
   "gcal_url": null,
-  "github": "https://github.com/erlef/eef-build-and-packaging-wg",
+  "github": "erlef/eef-build-and-packaging-wg",
   "members": [
     {
       "image": "members/tristan-sloughter.jpg",
@@ -40,10 +40,29 @@
     {
       "image": "members/profile-placeholder.png",
       "name": "Justin Wood"
+    },
+    {
+      "image": "members/jose-valim.jpg",
+      "name": "José Valim"
+    },
+    {
+      "image": "members/profile-placeholder.png",
+      "name": "Thomas Depierre"
+    },
+    {
+      "image": "members/adam-lindberg.jpg",
+      "name": "Adam Lindberg"
+    },
+    {
+      "image": "members/maxim-fedorov.jpg",
+      "name": "Maxim Fedorov"
+    },
+    {
+      "image": "members/profile-placeholder.png",
+      "name": "John Hogberg"
     }
   ],
   "name": "Building and Packaging",
-  "primary_contact_method": "github",
   "slug": "building"
 }
 ---
