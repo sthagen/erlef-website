@@ -1,45 +1,8 @@
-<div class="py-3">
-  <div class="container">
-    <h1 class="display-4 font-weight-bold"><%= @wg.name %> Working Group</h1>
+    <h1 class="display-5 font-weight-bold"><%= @wg.name %> Working Group</h1>
     <p class="lead">
       <%= @wg.description %>
     </p>
-  </div>
-</div>
-
-<div class="container mb-5">
-  <div class="row">
-    <div class="col-lg-8 pr-5">
-      <%= raw @wg.body_html %>
+      <%= raw @wg.charter_html %>
       <div class="mt-5">
-        <%= render_shared "gallery.html", members: Enum.shuffle(@wg.members) %>
+        <%= render_shared "gallery.html", Map.put(assigns, :members, Enum.shuffle(@wg.volunteers)) %>
       </div>
-    </div>
-    <div class="col-lg-4">
-      <p>You can reach us:</p>
-      <ul>
-      <%= if @wg.email do %>
-        <li>By e-mail: <a href="mailto:<%= @wg.email %>">
-          <%= @wg.email %></a></li>
-      <% end %>
-      <%= if @wg.github do %>
-        <li>On GitHub: <a href="https://github.com/<%= @wg.github %>">
-          <%= @wg.github %></a></li>
-      <% end %>
-      </ul>
-      <%= if @wg.gcal_url do %>
-      <p>Feel free to subscribe to our <a href="<%= raw @wg.gcal_url %>" title="Add to Google Calendar">Google Calendar</a>
-        to keep track of upcoming meetings </p>
-      <% end %>
-    </div>
-  </div>
-</div>
-<div class="container mt-5">
-  <h2>Latest News</h2>
-  <%= if Enum.empty?(@blog_posts) do %>
-  <p>Nothing yet! Check back soon!</p>
-  <% end %>
-  <%= for post <- @blog_posts do %>
-  <%= render(ErlefWeb.BlogView, "preview.html", post: post, topic: @topic) %>
-  <% end %>
-</div>

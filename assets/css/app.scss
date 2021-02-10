@@ -1,15 +1,19 @@
 @import "custom";
 @import "~bootstrap/scss/bootstrap";
 @import url("https://use.typekit.net/kyy4ydn.css");
+@import "../static/vendored/css/bootstrap-toc.css";
+@import "../node_modules/@fortawesome/fontawesome-free/css/all.css";
+@import "../node_modules/@fullcalendar/common/main.css";
+@import "../node_modules/@fullcalendar/bootstrap/main.css";
+@import "community";
+@import "blogs";
+@import "events";
+@import "fellows";
 
-
-
-
-
-html,
 body {
     font-family: canada-type-gibson, sans-serif;
 }
+
 
 h1,
 h2,
@@ -56,6 +60,12 @@ section {
     background-color: var(--dark);
 }
 
+
+nav.navbar { 
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+
 .avatar {
     width: 48px;
     height: 48px;
@@ -68,6 +78,10 @@ section {
     overflow: hidden;
 
     background: #444;
+}
+
+.twitter-avatar {
+    overflow: hidden;
 }
 
 .clip-svg {
@@ -109,26 +123,6 @@ section {
     display: none;
 }
 
-.event-card {
-    position: relative;
-    z-index: 100;
-}
-
-.event-card-image-wrapper {
-    width: 8rem;
-
-    flex-shrink: 0;
-}
-
-.event-card-image {
-    width: auto;
-    height: 4rem;
-}
-
-.event-card-list-image {
-    width: auto;
-}
-
 @media (min-width: 768px) {
     .right-bleed {
         left: 0;
@@ -145,4 +139,87 @@ section {
         margin-left: calc(-50vw / 2);
         overflow: hidden;
     }
+}
+
+/* TOC plugin css */
+
+nav[data-toggle="toc"] {
+    top: 2rem;
+}
+
+nav[data-toggle="toc"] .nav-link.active, nav[data-toggle="toc"] .nav-link.active:focus, nav[data-toggle="toc"] .nav-link.active:hover { 
+    color: black;
+    border-left: 2px solid black;
+}
+
+nav[data-toggle="toc"] .nav > li > a:hover,
+nav[data-toggle="toc"] .nav > li > a:focus {
+    color: black;
+    text-decoration: none;
+    background-color: transparent;
+    border-left: 1px solid black;
+}
+
+@media (max-width: 768px) {
+    nav[data-toggle="toc"] {
+        top: 4rem;
+        margin-bottom: 4rem;
+    }
+
+    nav[data-toggle="toc"] .nav .active .nav {
+        display: block;
+    }
+
+}
+
+code { 
+ color: #393434
+}
+
+.fc-daygrid-event { 
+  cursor: pointer;
+}
+
+.all_calendars { 
+    background-color: #ffffff;
+}
+
+.all_calendars .fc-header-toolbar > .fc-toolbar-chunk:nth-child(1)::before {
+    font-size: 1.75em;
+    content: 'Agenda';
+}
+
+tr.fc-list-day:nth-child(1) > th:nth-child(1) { 
+    z-index: 100;
+}
+ 
+@media (max-width: 600px) { 
+   .all_calendars .fc-header-toolbar > .fc-toolbar-chunk:nth-child(1)::before {
+        content: '';
+    }
+    .fc .fc-toolbar-title { 
+        font-size: 1.2em;
+    }
+}
+
+span.help-block {
+  display: inline-block;
+  margin-top: 0.5em;
+  background-color: #ffc107;
+  border-radius: 0.2em;
+  padding: 0.1em; 
+}
+
+.embedded-card div.card-header {  padding: 0.40rem 0.90rem !important };
+
+div.card-body.legend { font-size: 0.9em !important;}
+
+.legend .row { padding-bottom: 0.3em; }
+
+.legend .row:nth-of-type(even) div {
+  background-color: #f7f7f7;
+}
+
+.legend .row:nth-of-type(odd) div {
+    background: #ffffff;
 }

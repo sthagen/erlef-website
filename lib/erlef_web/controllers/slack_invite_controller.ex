@@ -3,19 +3,19 @@ defmodule ErlefWeb.SlackInviteController do
 
   action_fallback ErlefWeb.FallbackController
 
-  @supported_teams Application.get_env(:erlef, :slack_teams)
+  def index(conn, %{"team" => team}) do
+    case team in Application.get_env(:erlef, :slack_teams) do
+      true ->
+        render(conn, team: team, created: false)
 
-  def index(conn, %{"team" => team}) when team in @supported_teams do
-    render(conn, team: team, created: false)
-  end
+      false ->
+        msg =
+          "This slack team is not supported. Please contact infra@erlef.org if you believe this is an error."
 
-  def index(conn, _params) do
-    msg =
-      "This slack team is not supported. Please contact infra@erlef.org if you believe this is an error."
-
-    conn
-    |> put_flash(:error, msg)
-    |> redirect(to: "/")
+        conn
+        |> put_flash(:error, msg)
+        |> redirect(to: "/")
+    end
   end
 
   def create(conn, %{"email" => email, "team" => team}) do
@@ -44,7 +44,7 @@ defmodule ErlefWeb.SlackInviteController do
   defp success_msg, do: "<h3>Keep your 👀 peeled for an invitation email ...</h3>"
 
   defp validate_email(email) do
-    case Erlef.Inputs.is_email(email) do
+    case Erlef.Inputs.is_email?(email) do
       true -> {:ok, :valid}
       false -> {:error, :invalid_email}
     end

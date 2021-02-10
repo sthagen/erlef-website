@@ -1,13 +1,21 @@
-<div class="col-md-3 col-sm-6 col-12">
-  <div class="info-box bg-gradient-warning">
-    <span class="info-box-icon"><i class="far fa-calendar-alt"></i></span>
+<div class="row">
 
-    <div class="info-box-content">
-      <span class="info-box-text">Unapproved Events</span>
-      <span class="info-box-number"><%= @unapproved_event_count %></span>
-      <%= link("Click to review", to: Routes.admin_event_path(@conn, :index)) %>
-    </div>
-    <!-- /.info-box-content -->
-  </div>
-  <!-- /.info-box -->
+  <%= small_info_box(@resource_counts.unapproved_events_count, 
+                    "Unapproved Events", 
+                    "fa-calendar-alt",  
+                      Routes.admin_event_path(@conn, :index), 
+                      "warning") 
+  %>
+  
+  <%= small_info_box(@resource_counts.outstanding_email_requests_count, "Email Requests", "fa-envelope",  Routes.admin_email_request_path(@conn, :index)) %>
+
+  <%= small_info_box(@resource_counts.sponsors_count, "Sponsors", "fa-hand-holding-heart",  Routes.admin_sponsor_path(@conn, :index), "maroon") %>
+
+  <%= small_info_box(@resource_counts.working_groups_count, "Working Groups", "fa-users-cog",  Routes.admin_working_group_path(@conn, :index), "teal") %>
+
+
+  <%= small_info_box(@resource_counts.volunteers_count, "Volunteers", "fa-user",  Routes.admin_volunteer_path(@conn, :index), "blue") %>
+
+  <%= small_info_box(@resource_counts.apps_count, "Apps", "fa-rocket",  Routes.admin_app_path(@conn, :index), "red") %>
+
 </div>

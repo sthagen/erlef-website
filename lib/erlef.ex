@@ -1,11 +1,18 @@
 defmodule Erlef do
-  @moduledoc """
-  Erlef keeps the contexts that define your domain
-  and business logic.
+  @moduledoc false
 
-  Contexts are also responsible for managing your data, regardless
-  if it comes from the database, an external API or others.
-  """
+  @spec in_env?([atom()]) :: boolean()
+  def in_env?(envs), do: Application.get_env(:erlef, :env) in envs
 
+  @spec is_env?(atom) :: boolean()
   def is_env?(env), do: Application.get_env(:erlef, :env) == env
+
+  def data_path(path) do
+    List.to_string(:code.priv_dir(:erlef)) <> "/data/#{path}"
+  end
+
+  def get_data(path) do
+    {term, _binding} = Code.eval_file(data_path(path))
+    term
+  end
 end

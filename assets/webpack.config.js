@@ -1,5 +1,6 @@
 const path = require('path');
 const glob = require('glob');
+const webpack = require('webpack');
 const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const OptimizeCSSAssetsPlugin = require('optimize-css-assets-webpack-plugin');
@@ -17,11 +18,12 @@ module.exports = (env, options) => ({
         ]
     },
     entry: {
-        app: ['./js/app.js'].concat(glob.sync('./vendor/**/*.js')),
+        app: ['./js/app.js'],
         admin: ['./js/admin.js']
     },
     output: {
         filename: '[name].js',
+        library: '[name]',
         path: path.resolve(__dirname, '../priv/static/js')
     },
     module: {
@@ -60,7 +62,15 @@ module.exports = (env, options) => ({
                         outputPath: 'fonts/'
                     }
                 }]
-            }
+            },
+            {
+                test: require.resolve('jquery'),
+                loader: 'expose-loader',
+                options: {
+                exposes: ['$', 'jQuery'],
+            },
+
+          }
         ]
     },
     plugins: [
@@ -68,12 +78,30 @@ module.exports = (env, options) => ({
             filename: '../css/[name].css',
             chunkFilename: "../css/[name].css"
         }),
+        new  CopyWebpackPlugin([{
+            from: 'node_modules/@fortawesome/fontawesome-free/webfonts',
+            to: '../css/fonts'
+        }]), 
         new CopyWebpackPlugin([{
             from: 'static/',
             to: '../'
-        }])
-    ],
-    externals: {
-        jquery: 'jQuery'
-    }
+        }]),
+       new webpack.ProvidePlugin({
+          $: "jquery",
+          jQuery: "jquery",
+          "window.jQuery": "jquery",
+          Popper: ['popper.js', 'default'],
+          Alert: "exports-loader?Alert!bootstrap/js/dist/alert",
+          Button: "exports-loader?Button!bootstrap/js/dist/button",
+          Carousel: "exports-loader?Carousel!bootstrap/js/dist/carousel",
+          Collapse: "exports-loader?Collapse!bootstrap/js/dist/collapse",
+          Dropdown: "exports-loader?Dropdown!bootstrap/js/dist/dropdown",
+          Modal: "exports-loader?Modal!bootstrap/js/dist/modal",
+          Popover: "exports-loader?Popover!bootstrap/js/dist/popover",
+          Scrollspy: "exports-loader?Scrollspy!bootstrap/js/dist/scrollspy",
+          Tab: "exports-loader?Tab!bootstrap/js/dist/tab",
+          Tooltip: "exports-loader?Tooltip!bootstrap/js/dist/tooltip",
+          Util: "exports-loader?Util!bootstrap/js/dist/util"
+        })
+    ]
 });

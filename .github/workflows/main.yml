@@ -1,5 +1,15 @@
 name: CI
-on: [pull_request]
+
+on:
+  push:
+    branches: develop
+  pull_request:
+    branches: develop
+env:
+  otp-version: '23.1.2'
+  elixir-version: '1.11.2'
+  MIX_ENV: test
+
 jobs:
   build:
     name: Build
@@ -8,28 +18,24 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: deps.get
-        run: MIX_ENV=test mix deps.get
+        run: mix deps.get
       - name: compile
-        run: MIX_ENV=test mix compile --warnings-as-errors
+        run: mix compile --warnings-as-errors
 
   format:
     name: Format
@@ -39,26 +45,22 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: format
-        run: MIX_ENV=test mix format --check-formatted
+        run: mix format --check-formatted
 
   sobelow:
     name: Sobelow
@@ -68,26 +70,22 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: format
-        run: MIX_ENV=test mix sobelow --skip
+        run: mix sobelow --skip
   credo:
     name: Credo
     runs-on: ubuntu-latest
@@ -96,26 +94,22 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: credo
-        run: MIX_ENV=test mix credo
+        run: mix credo
 
   dialyzer:
     needs: build
@@ -125,34 +119,27 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: restore-plts
         uses: actions/cache@v1
         with:
           path: priv/plts
-          key: ${{ runner.os }}-erlef-dialyzer-22.2.6-1.10.1-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-erlef-dialyzer-
+          key: ${{ runner.os }}-erlef-dialyzer-${{ env.otp-version }}-${{ env.elixir-version }}-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
       - name: dialyze
-        run: |
-          MIX_ENV=test mix dialyzer
+        run: mix dialyzer
 
   test:
     needs: build
@@ -174,25 +161,19 @@ jobs:
       - name: checkout
         uses: actions/checkout@v2
       - name: setup
-        uses: actions/setup-elixir@v1
+        uses: erlef/setup-elixir@v1
         with:
-          otp-version: 22.2.6
-          elixir-version: 1.10.1
+          otp-version: ${{ env.otp-version }}
+          elixir-version: ${{ env.elixir-version }}
       - name: restore-deps
         uses: actions/cache@v1
         with:
           path: deps
           key: ${{ runner.os }}-mix-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-mix-
       - name: restore-build
         uses: actions/cache@v1
         with:
           path: _build
           key: ${{ runner.os }}-build-${{ hashFiles(format('{0}{1}', github.workspace, '/mix.lock')) }}
-          restore-keys: |
-            ${{ runner.os }}-build-
       - name: test
-        env:
-          RECAPTCHA_URL: http://127.0.0.1:9998/recaptcha/api/siteverify
-        run: MIX_ENV=test mix test
+        run: mix test

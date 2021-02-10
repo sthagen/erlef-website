@@ -27,26 +27,16 @@ defmodule ErlefWeb.SessionController do
   end
 
   def delete(conn, _params) do
-    :ok = Erlef.Session.logout(conn.assigns.current_user)
+    :ok = Erlef.Session.logout(conn.assigns.current_session)
 
     conn
     |> delete_session("member_session")
     |> redirect(to: "/")
   end
 
+  @spec maybe_redirect(any()) :: no_return()
   defp maybe_redirect(conn) do
-    case Erlef.is_env?(:dev) do
-      true ->
-        {:ok, session} = Erlef.Session.login(:dev)
-
-        conn
-        |> configure_session(renew: true)
-        |> put_session("member_session", session)
-        |> redirect(to: "/")
-
-      false ->
-        uri = Erlef.Session.login_uri()
-        redirect(conn, external: uri)
-    end
+    uri = Erlef.Session.login_uri()
+    redirect(conn, external: uri)
   end
 end

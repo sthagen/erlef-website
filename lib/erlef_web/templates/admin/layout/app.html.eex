@@ -4,59 +4,76 @@
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/admin.css") %>">
-
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/admin.css") %>"> 
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/codemirror.min.css") %>">
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/toastui-editor.min.css") %>">
+    <link rel="stylesheet" href="<%= Routes.static_path(@conn, "/css/datatables.min.css") %>">
+    <script src="<%= Routes.static_path(@conn, "/js/admin.js") %>"></script>
+    <script src="<%= Routes.static_path(@conn, "/js/datatables.min.js") %>"></script>
   </head>
 
-  <body class="hold-transition sidebar-mini">
-<div class="wrapper">
-  <body>
-    <%= render "header.html", conn: @conn, current_user: @current_user %>
-     <%= render "sidebar.html", conn: @conn, current_user: @current_user %>
+  <body class="hold-transition sidebar-mini sidebar-collapse">
+    <div class="wrapper">
+      <%= render "header.html", conn: @conn, current_user: @current_user %>
+      <%= render "sidebar.html", conn: @conn, current_user: @current_user %>
 
-     <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper">
-    <!-- Content Header (Page header) -->
-    <div class="content-header">
-      <div class="container-fluid">
-        <div class="row mb-2">
-          <div class="col-sm-6">
-          </div><!-- /.col -->
-          <div class="col-sm-6">
-            <ol class="breadcrumb float-sm-right">
-              <!-- put bread crumbs here -->
-            </ol>
-          </div><!-- /.col -->
-        </div><!-- /.row -->
-      </div><!-- /.container-fluid -->
+      <div class="content-wrapper">
+        <div class="content-header">
+          <div class="container-fluid">
+            <%= if flash = get_flash(@conn, :info) do %>
+              <div class="alert alert-info" role="alert">
+                <%= raw flash %>
+              </div>
+            <% end %>
+
+            <%= if flash = get_flash(@conn, :error) do %>
+              <div class="alert alert-danger" role="alert">
+                <%= raw flash %>
+              </div>
+            <% end %>
+
+            <%= if flash = get_flash(@conn, :success) do %>
+              <div class="alert alert-success" role="alert">
+                <%= raw flash %>
+              </div>
+            <% end %>
+            <div class="row">
+              <div class="col-sm-6">
+                <h3><%= @view_module.title(@conn) %></h3>
+              </div>
+              <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                  <% current = current_path_segment(@conn) %>
+                  <%= for {part, path} <- bread_crumbs(@conn) do %>
+                    <%= if part == current do %>
+                      <li class="breadcrumb-item active"><%= breadcrumb_name(part) %></li>
+                    <% else %>
+                      <li class="breadcrumb-item"><a href="<%= path %>"><%= breadcrumb_name(part) %></a></li>
+                    <% end %>
+                  <% end %>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="content">
+          <div class="container-fluid">
+            <%= @inner_content %>
+          </div>
+        </div>
+      </div>
+
+      <aside class="control-sidebar control-sidebar-dark">
+        <div class="p-3">
+          <h5>Title</h5>
+          <p>Sidebar content</p>
+        </div>
+      </aside>
+
+      <%= render "footer.html", conn: @conn, current_user: @current_user %>
+
     </div>
-    <!-- /.content-header -->
-
-    <!-- Main content -->
-    <div class="content">
-            <div class="container-fluid">
-              <%= render @view_module, @view_template, assigns %>
-     </div><!-- /.container-fluid -->
     </div>
-    <!-- /.content -->
-  </div>
-  <!-- /.content-wrapper -->
-
-  <!-- Control Sidebar -->
-  <aside class="control-sidebar control-sidebar-dark">
-    <!-- Control sidebar content goes here -->
-    <div class="p-3">
-      <h5>Title</h5>
-      <p>Sidebar content</p>
-    </div>
-  </aside>
-  <!-- /.control-sidebar -->
-    <%= render "footer.html", conn: @conn, current_user: @current_user %>
-
-</div>
-<!-- ./wrapper -->
-
-    <script src="<%= Routes.static_path(@conn, "/js/admin.js") %>"></script>
-</div>
   </body>
 </html>

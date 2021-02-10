@@ -26,6 +26,10 @@ defmodule ErlefWeb do
       import Phoenix.LiveView.Controller
 
       alias ErlefWeb.Router.Helpers, as: Routes
+
+      def audit(conn) do
+        %{member_id: conn.assigns.current_user.id}
+      end
     end
   end
 
@@ -45,6 +49,7 @@ defmodule ErlefWeb do
       import ErlefWeb.Gettext
       import ErlefWeb.HTML
       import Phoenix.LiveView.Helpers
+      import ErlefWeb.ViewHelpers
 
       alias ErlefWeb.Router.Helpers, as: Routes
 
@@ -56,10 +61,15 @@ defmodule ErlefWeb do
         !!assigns[:current_user]
       end
 
-      def is_admin?(assigns) do
-        user = assigns[:current_user]
-        user.is_admin || false
+      def image_path(conn, nil), do: ""
+
+      def image_path(_conn, <<"http", _rest::binary>> = url), do: url
+
+      def image_path(conn, <<"volunteers", _rest::binary>> = path) do
+        Routes.static_path(conn, "/images/" <> path)
       end
+
+      def image_path(conn, path), do: Routes.static_path(conn, path)
     end
   end
 

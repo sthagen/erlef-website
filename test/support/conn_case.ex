@@ -18,7 +18,8 @@ defmodule ErlefWeb.ConnCase do
   using do
     quote do
       # Import conveniences for testing with connections
-      use Phoenix.ConnTest
+      import Plug.Conn
+      import Phoenix.ConnTest
 
       import Erlef.Factory
 
@@ -26,14 +27,32 @@ defmodule ErlefWeb.ConnCase do
 
       # The default endpoint for testing
       @endpoint ErlefWeb.Endpoint
+
+      def authenticated_conn(conn, username) do
+        {:ok, session} = Erlef.Session.login(username)
+        {:ok, session} = Erlef.Session.encode(%{"member_session" => session})
+        {:ok, session} = Erlef.Session.decode(session)
+
+        conn
+        |> Plug.Test.init_test_session(session)
+        |> Plug.Conn.fetch_session()
+      end
+
+      def admin_session(%{conn: conn}) do
+        [conn: authenticated_conn(conn, "admin")]
+      end
+
+      def chair_session(%{conn: conn}) do
+        [conn: authenticated_conn(conn, "wg_chair")]
+      end
     end
   end
 
   setup tags do
-    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Erlef.Data.Repo)
+    :ok = Ecto.Adapters.SQL.Sandbox.checkout(Erlef.Repo)
 
     unless tags[:async] do
-      Ecto.Adapters.SQL.Sandbox.mode(Erlef.Data.Repo, {:shared, self()})
+      Ecto.Adapters.SQL.Sandbox.mode(Erlef.Repo, {:shared, self()})
     end
 
     {:ok, conn: Phoenix.ConnTest.build_conn()}

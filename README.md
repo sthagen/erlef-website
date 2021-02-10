@@ -1,21 +1,22 @@
 # Erlef
 
+![CI](https://github.com/erlef/website/workflows/CI/badge.svg)
+
 ## Prerequisites
 
  A `.tool-versions` file is provided in this repo for [asdf](https://asdf-vm.com/) users.
 
- - Erlang/OTP 22
- - Elixir 1.9
- - NodeJS v12
+ - Erlang/OTP 23
+ - Elixir 1.11
+ - NodeJS v10 (or greatter)
+ - Yarn
 
 ## Up and running
 
   * Install dependencies with `mix deps.get`
-  * Install Node.js dependencies with `cd assets && npm install`
-  * Run `mix do ecto.create, ecto.migrate` to setup the local database
+  * Install Node.js dependencies with `cd assets && yarn`
+  * Run `mix ecto.setup` to setup the local database
   * Start Phoenix endpoint with `mix phx.server`
-  * Load seed data
-    - run `mix run priv/repo/academic_papers.exs`
 
 Now you can visit [`localhost:4000`](http://localhost:4000) from your browser.
 
@@ -77,6 +78,41 @@ This is where the body of the post goes.
 ## Development
 
 ### Getting around in dev mode
-- copy .env-example to .env-local and source the file
-- you may login in as an regular user in dev using member@erlef.test and any password
-- you may login in as an admin in dev using admin@erlef.test and any password
+- No extra configuration is needed to getting up and running in dev mode. Simply start up the app after
+  initializing the database and login. 
+- You may login in with different personas in dev mode using the `Login as` dropdown menu. 
+
+### Contributing to the community section of the site
+
+All resources data for the community page of the site can be found in [priv/data/community](priv/data/community).
+
+Before proceeding please:
+
+   -  Stick to facts about entries you add and avoid asserting comparative or superlative differences of one product, 
+      project, company or individual over another.
+   -  Note than an `about` value for sections of the page that make use of cards can have no more than 240 characters and
+      optimally have no less than 200 characters.
+
+#### Adding an entry to an existing section
+
+  To add an entry to an existing section simply find the relevant `.exs` file in  [priv/data/community](priv/data/community) and add a new entry. That's it!
+
+#### Adding a new section or sub-section 
+
+  - Create a new `.exs` file in [priv/data/community](priv/data/community) with a name that reflects the section of the site (e.g, languages, platforms, etc.) 
+    
+    - See [priv/data/community/languages.exs](priv/data/community/languages.exs) as an example. 
+
+  - A new function should be able after you recompile `Erlef.Community.Resources` with the base name of the file you added prefixed with `all_` (e.g., `all_languages`). Likewise it will also be available in the main data map returned by the `all/0` function.
+
+  - Add the new section or sub-section
+    to [lib/erlef_web/templates/page/community.html.eex](lib/erlef_web/templates/page/community.html.eex).
+    
+    - Note that both `<h1>` and `<h2>` tags within this file will automatically end up within the TOC component on the 
+      page. Deeper nesting is not supported. See existing sections for examples.
+
+    - The layout for what you're adding may depend on the type of section and there are are no hard rules around how
+      something should be displayed. If you're unsure or need feedback please reach out to us in an issue or as 
+      part of a pull request.
+
+  - Commit your changes and open up a new pull request using the Community Section pull request template 🎉

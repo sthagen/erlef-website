@@ -1,0 +1,46 @@
+  <div class="row">  
+    <div class="col-sm-2">
+      <%= render ErlefWeb.Admin.AppView, "_sidebar.html", assigns %>
+    </div>
+    <!-- /.col -->
+    <div class="col-md-10">
+      <div class="card card-primary card-outline">
+        <div class="card-header">
+          <h3 class="card-title">App <%= @app.name %> - General settings</h3>
+            <%= link "Edit", to: Routes.admin_app_path(@conn, :edit, @app.slug),  class: "float-right btn btn-primary" %>
+
+        </div>  
+        <!-- /.card-header -->
+        <div class="card-body p-0">
+           <div class="mb-2"></div>
+          <ul>
+            <li>
+            <strong>Name:</strong>
+              <%= @app.name %>
+            </li>
+
+            <li class="mt-4">
+              <strong>Enabled:</strong>
+              <%= humanize(@app.enabled) %>
+            </li>
+
+            <li class="mt-4">
+              <strong>Client ID:</strong>
+              <%= @app.client_id %>
+            </li>
+
+            <li class="mt-4">
+              <strong>Created by:</strong>
+              <%= @app.created_by %>
+            </li>
+
+            <li class="mt-4">
+              <strong>Updated by:</strong>
+              <%= @app.updated_by %>
+            </li>
+          </ul>
+        </div>
+      </div>    
+    </div>
+  </div>
+

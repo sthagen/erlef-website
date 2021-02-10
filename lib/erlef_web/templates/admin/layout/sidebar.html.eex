@@ -1,5 +1,5 @@
 <!-- Main Sidebar Container -->
-<aside class="main-sidebar sidebar-dark-primary elevation-4">
+<aside class="main-sidebar sidebar-dark-primary sidebar-no-expand elevation-4">
   <!-- Brand Logo -->
   <a href="/" class="brand-link">
     <img src="/images/eef-logo-1.png" alt="Erlef Logo" class="brand-image img-circle elevation-3" style="opacity: .8">
@@ -8,19 +8,24 @@
 
   <!-- Sidebar -->
   <div class="sidebar">
-    <!-- Sidebar user panel (optional) -->
-    <!-- Sidebar Menu -->
     <nav class="mt-2">
-      <ul class="nav nav-pills nav-sidebar flex-column" data-widget="treeview" role="menu">
-        <li class="nav-item has-treeview menu-open">
-          <a href="/admin" class="nav-link">
-            <i class="nav-icon fas fa-user"></i>
-            <p>
-              Event Review
-              <i class="right fas fa-angle-left"></i>
-            </p>
-          </a>
-        </li>
+      <ul class="nav nav-pills nav-sidebar text-sm flex-column" data-widget="treeview" role="menu">
+
+        <%= nav_link(to: Routes.admin_event_path(@conn, :index), name: "Events", icon: "fa-calendar-alt") %>
+
+        <%= nav_link(to: Routes.admin_email_request_path(@conn, :index), name: "Email Requests", icon: "fa-envelope") %>
+
+        <%= nav_link(to: Routes.admin_sponsor_path(@conn, :index), name: "Sponsors", icon: "fa-hand-holding-heart") %>
+
+        <%= nav_link(to: Routes.admin_working_group_path(@conn, :index), name: "Working Groups", icon: "fa-users-cog") %>
+
+        <%= nav_link(to: Routes.admin_volunteer_path(@conn, :index), name: "Volunteers", icon: "fa-user") %>
+
+        
+        <%= nav_link(to: Routes.admin_app_path(@conn, :index), name: "Apps", icon: "fa-rocket") %>
+
+        <%= nav_link(to: Routes.live_dashboard_path(@conn, :home), name: "Live dashboard", icon: "fa-tachometer-alt", target: "_blank") %>
+ 
       </ul>
     </nav>
     <!-- /.sidebar-menu -->

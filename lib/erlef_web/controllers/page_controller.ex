@@ -2,36 +2,43 @@ defmodule ErlefWeb.PageController do
   use ErlefWeb, :controller
 
   alias Erlef.{
-    Blog,
-    Posts,
-    WorkingGroup,
-    Twitter,
-    Data.Query.Event
+    Community,
+    Blogs,
+    Groups,
+    Twitter
   }
 
   action_fallback ErlefWeb.FallbackController
 
+  def all_calendars(conn, _params) do
+    {:ok, combined} = Erlef.Agenda.get_combined()
+
+    conn
+    |> put_resp_content_type("text/plain")
+    |> send_resp(200, combined)
+  end
+
   def index(conn, _params) do
-    latest_news =
-      Blog
-      |> Posts.all()
-      |> Posts.sort_by_datetime()
-      |> Enum.take(3)
+    latest_news = Blogs.latest_posts()
 
     render(conn,
-      working_groups: Posts.all(WorkingGroup),
+      working_groups: Groups.list_working_groups(),
       latest_news: latest_news,
       tweets: Twitter.latest_tweets(),
-      events: Event.approved() |> Enum.take(3)
+      events: Community.approved_events() |> Enum.take(3)
     )
   end
 
   def board_members(conn, _params) do
-    members = Enum.shuffle(Erlef.Rosters.get("board"))
+    members = Enum.shuffle(Groups.list_board_members())
     render(conn, members: members)
   end
 
   def bylaws(conn, _params), do: render(conn)
+
+  def community(conn, _params) do
+    render(conn, community: Erlef.Community.all_resources())
+  end
 
   def sponsor_info(conn, _params), do: render(conn, "become_a_sponsor.html")
 
@@ -39,16 +46,13 @@ defmodule ErlefWeb.PageController do
 
   def faq(conn, _params), do: render(conn)
 
-  def sponsors(conn, _params) do
-    %{true: founding_sponsors, false: sponsors} =
-      Erlef.Rosters.get("sponsors") |> Enum.group_by(fn {_k, x} -> x.founding_sponsor == true end)
+  def fellows(conn, _params) do
+    render(conn, fellows: Erlef.Fellows.all())
+  end
 
-    render(conn, founding_sponsors: founding_sponsors, sponsors: sponsors)
+  def sponsors(conn, _params) do
+    render(conn, sponsors: Groups.list_sponsors())
   end
 
   def wg_proposal_template(conn, _params), do: render(conn, "wg-proposal-template.html")
-
-  def academic_papers(conn, _params) do
-    render(conn, academic_papers: Erlef.AcademicPapers.all())
-  end
 end
