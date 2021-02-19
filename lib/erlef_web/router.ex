@@ -89,8 +89,6 @@ defmodule ErlefWeb.Router do
     get "/faq", PageController, :faq
     get "/fellows", PageController, :fellows
     get "/sponsors", PageController, :sponsors
-    get "/past-founding-sponsors", PageController, :past_founding_sponsors
-    get "/become-a-sponsor", PageController, :sponsor_info
     get "/wg-proposal-template", PageController, :wg_proposal_template
 
     # NOTE: News routes are still in place for links that may be out there.
@@ -102,6 +100,11 @@ defmodule ErlefWeb.Router do
     get "/blog/tags/:tag", BlogController, :tags, as: :blog
     get "/blog/:topic", BlogController, :index, as: :blog
     get "/blog/:topic/:id", BlogController, :show, as: :blog
+
+    scope "/submissions" do
+      pipe_through [:session_required]
+      resources "/news", NewsTipController
+    end
 
     get "/events/:slug", EventController, :show
     get "/events", EventController, :index
