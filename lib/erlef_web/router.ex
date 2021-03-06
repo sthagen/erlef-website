@@ -8,8 +8,9 @@ defmodule ErlefWeb.Router do
     syndication.twitter.com/settings cdn.syndication.twimg.com
     licensebuttons.net i.creativecommons.org
     pbs.twimg.com use.typekit.net p.typekit.net
-    event-org-images.ewr1.vultrobjects.com sponsors.ewr1.vultrobjects.com erlef.matomo.cloud cdn.rawgit.com
-    127.0.0.1:9998 cdn.datatables.net user.fm cdnjs.cloudflare.com uicdn.toast.com/
+    avatar-images.ewr1.vultrobjects.com event-org-images.ewr1.vultrobjects.com 
+    sponsors.ewr1.vultrobjects.com erlef.matomo.cloud cdn.rawgit.com
+    127.0.0.1:9998 cdn.datatables.net user.fm cdnjs.cloudflare.com uicdn.toast.com
   )
 
   @trusted_connect_sources ~w(https://user.fm https://www.erlef.org wss://erlef.org 
@@ -176,6 +177,9 @@ defmodule ErlefWeb.Router do
       resources "/sponsors", SponsorController
 
       resources "/wg", WorkingGroupController
+
+      get "/wg/:id/volunteers", WorkingGroupController, :add_volunteers
+      post "/wg/:id/volunteers", WorkingGroupController, :create_wg_volunteers
 
       put "/wg/:id/chairs/:volunteer_id",
           WorkingGroupController,

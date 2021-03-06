@@ -14,7 +14,9 @@ function build_event(vevent) {
   var start = to_JSDate(event.startDate);
   var end = (event.endDate ? to_JSDate(event.endDate) : null);
 
-  if (event.isRecurring) {
+  let is_recurring = event.isRecurring(event);
+
+  if (is_recurring) {
     let recur_rules = event.iterator().toJSON().ruleIterators[0].rule;
     let iterator = event.iterator();
 
@@ -23,26 +25,44 @@ function build_event(vevent) {
     for (i = 0; i < 12; i++) {
         if (i === 12) { break; }
         let next = iterator.next();
-        let occurance = event.getOccurrenceDetails(next);
-        let e = {
+        if (event && next) { 
+            console.log("event");
+            console.log(event);
+            console.log("next");
+            console.log(next);
+            let occurance = event.getOccurrenceDetails(next);
+            let e = {
             title: event.summary,
             start: to_JSDate(occurance.startDate),
             end: (occurance.endDate ? to_JSDate(occurance.endDate) : null),
             description: event.description,
             location: event.location,
             allDay: false
+            }
+            recurrances.push(e);
         }
-        recurrances.push(e);
     }
     return recurrances;
   } else { 
-    return {
-        title: event.summary,
-        start: start,
-        end: end,
-        description: event.description,
-        location: event.location
-    }
+      if (event.startDate.isDate) {
+        return {
+            title: event.summary,
+            start: event.startDate.toJSDate(),
+            end:  event.endDate.toJSDate(),
+            description: event.description,
+            location: event.location,
+            allDay: true
+        }
+     } else { 
+        return {
+          title: event.summary,
+          start: start,
+          end: end,
+          description: event.description,
+          location: event.location,
+          allDay: false
+       }
+     }
   }
 }
 
@@ -140,12 +160,12 @@ document.addEventListener('DOMContentLoaded', function() {
                 $('.modal').find('.starts-at').text(dtstart.toLocaleString(DateTime.DATETIME_FULL));
                 $('.modal').find('.ends-at').text(dtend.toLocaleString(DateTime.DATETIME_FULL));
                 if (event.description) { 
-                    $('.modal').find('.description').text(event.description);
+                    $('.modal').find('.description').html(event.description);
                 } else {
                     $('.modal').find('.description-label').hide();
                 }
                 if (event.extendedProps.location) { 
-                    $('.modal').find('.location').text(event.extendedProps.location);
+                    $('.modal').find('.location').html(event.extendedProps.location);
                 } else {
                     $('.modal').find('.location-label').hide();
                 }

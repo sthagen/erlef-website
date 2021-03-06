@@ -21,6 +21,7 @@ defmodule Erlef.Groups.WorkingGroup do
       field(:email, :string)
       field(:github, :string)
       field(:gcal_url, :string)
+      field(:erlef_slack_channel, :string)
       field(:public_calendar, :string)
       field(:private_calendar, :string)
     end
@@ -92,7 +93,15 @@ defmodule Erlef.Groups.WorkingGroup do
 
   defp meta_changeset(schema, params) do
     schema
-    |> cast(params, [:github, :gcal_url, :email, :public_calendar, :private_calendar])
+    |> cast(params, [
+      :erlef_slack_channel,
+      :github,
+      :gcal_url,
+      :email,
+      :public_calendar,
+      :private_calendar
+    ])
+    |> validate_url(:slack_erlef_channel)
     |> validate_url(:public_calendar)
     |> validate_url(:private_calendar)
     |> validate_url(:gcal_url)
