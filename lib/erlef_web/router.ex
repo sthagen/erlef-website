@@ -11,10 +11,11 @@ defmodule ErlefWeb.Router do
     avatar-images.ewr1.vultrobjects.com event-org-images.ewr1.vultrobjects.com 
     sponsors.ewr1.vultrobjects.com erlef.matomo.cloud cdn.rawgit.com
     127.0.0.1:9998 cdn.datatables.net user.fm cdnjs.cloudflare.com uicdn.toast.com
+    plausible.io
   )
 
   @trusted_connect_sources ~w(https://user.fm https://www.erlef.org wss://erlef.org 
-    wss://www.erlef.org ws://erlef.org ws://www.erlef.org  https://erlef.matomo.cloud https://raw.githubusercontent.com)
+    wss://www.erlef.org ws://erlef.org ws://www.erlef.org  https://plausible.io https://raw.githubusercontent.com)
 
   if Erlef.in_env?([:dev, :test]) do
     @default_source Enum.join(@trusted_sources ++ ["127.0.0.1:9998"], " ")
@@ -125,6 +126,7 @@ defmodule ErlefWeb.Router do
     get "/stipends/form", StipendController, :form
 
     resources "/slack-invite/:team", SlackInviteController, only: [:create, :index]
+    resources "/conference-perks/:conference", ConferencePerkController, only: [:index]
 
     scope "/wg/:slug", WorkingGroup, as: :working_group do
       pipe_through [:session_required, :working_group, :chair_required]
