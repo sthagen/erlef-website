@@ -19,25 +19,4 @@ defmodule Erlef.Admins.Notifications do
     |> subject("A new email request was created")
     |> text_body(msg)
   end
-
-  def new(:new_slack_invite, %{member: member}) do
-    msg = """
-    A member has requested access to the Erlef slack. 
-
-    A workspace owner or admin must now go on the Erlef slack workspace and create
-    an invite for the member by typing the following : 
-
-    /invite 
-
-    And then enter the members's email : #{member.email}
-
-    Note: You may be prompted to approve this invitation as well.
-    """
-
-    new()
-    |> to({"Erlef Slack Invites", "erlef-slack-invites@erlef.org"})
-    |> from({"Erlef Notifications", "notifications@erlef.org"})
-    |> subject("A member is requesting a new slack invite")
-    |> text_body(msg)
-  end
 end
