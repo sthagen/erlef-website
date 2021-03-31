@@ -3,6 +3,7 @@ defmodule Erlef.CommunityTest do
 
   alias Erlef.Community
   alias Erlef.Community.Event
+  import Swoosh.TestAssertions
 
   test "event_types/0" do
     assert [:conference, :training, :meetup, :hackathon] = Community.event_types()
@@ -15,12 +16,16 @@ defmodule Erlef.CommunityTest do
     }
 
     p = string_params_for(:event, type: :hackathon)
-    p = Map.put(p, "organizer_brand_logo", logo)
-    assert {:ok, %Event{}} = Community.submit_event(p)
+    member = insert_member!("basic_member")
+    p = Map.merge(p, %{"organizer_brand_logo" => logo, "submitted_by_id" => member.id})
+    assert {:ok, %Event{}} = Community.submit_event(p, %{member: member})
+    assert_email_sent(Erlef.Admins.Notifications.new(:new_event_submitted, %{}))
+    assert_email_sent(Erlef.Members.Notifications.new(:new_event_submitted, %{member: member}))
   end
 
   test "approve/2" do
-    p = params_for(:event, %{type: :meetup})
+    member = insert_member!("basic_member")
+    p = params_for(:event, %{submitted_by_id: member.id, type: :meetup})
     cs = Event.submission_changeset(%Event{}, p)
     event = Repo.insert!(cs)
 
@@ -28,30 +33,33 @@ defmodule Erlef.CommunityTest do
     assert Community.unapproved_events_count() == 1
     assert [%Event{}] = Community.unapproved_events()
 
-    uuid = Ecto.UUID.generate()
+    admin = insert_member!("admin")
 
-    assert {:ok, %Event{approved_by: ^uuid}} =
+    assert {:ok, %Event{}} =
              Community.approve_event(event.id, %{
-               approved_by: uuid,
+               approved_by_id: admin.id,
                approved_at: DateTime.utc_now()
              })
 
     assert Community.unapproved_events_count() == 0
     assert [] = Community.unapproved_events()
     assert [%Event{}] = Community.approved_events()
+    assert_email_sent(Erlef.Members.Notifications.new(:new_event_approved, %{member: member}))
   end
 
   test "get_event/1" do
-    p = params_for(:event, %{type: :training})
+    member = insert_member!("basic_member")
+    p = params_for(:event, %{submitted_by_id: member.id, type: :training})
     cs = Event.submission_changeset(%Event{}, p)
     event = Repo.insert!(cs)
 
     fetched_event = Community.get_event(event.id)
-    assert fetched_event == event
+    assert fetched_event.id == event.id
   end
 
   test "get_event_by_slug/1" do
-    p = params_for(:event, %{title: "foo bar", type: :meetup})
+    member = insert_member!("basic_member")
+    p = params_for(:event, %{submitted_by_id: member.id, title: "foo bar", type: :meetup})
     cs = Event.submission_changeset(%Event{}, p)
     event = Repo.insert!(cs)
 

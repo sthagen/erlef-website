@@ -6,7 +6,8 @@ defmodule Erlef.Community do
   alias Ecto.{Changeset, UUID}
   alias Erlef.Community.Query
   alias Erlef.Community.Event
-  alias Erlef.Repo
+  alias Erlef.{Accounts, Admins, Members, Repo}
+  alias Erlef.Accounts.Member
   alias Erlef.Community.Resources
 
   defdelegate approved_events(), to: Query
@@ -25,11 +26,21 @@ defmodule Erlef.Community do
 
   @spec approve_event(UUID.t(), map()) :: {:ok, Event.t()} | {:error, Changeset.t()}
   def approve_event(id, params) do
-    event = Query.get_event(id)
+    Repo.transaction(fn ->
+      with %Event{} = event <- Query.get_event(id),
+           %Member{} = member <- Accounts.get_member(event.submitted_by_id),
+           %Ecto.Changeset{} = cs <- Event.approval_changeset(event, params),
+           {:ok, event} <- Repo.update(cs),
+           {:ok, _notify} <- Members.notify(:new_event_approved, %{member: member}) do
+        event
+      else
+        {:error, err} ->
+          Repo.rollback(err)
 
-    event
-    |> Event.approval_changeset(params)
-    |> Repo.update()
+        err ->
+          Repo.rollback(err)
+      end
+    end)
   end
 
   def change_event(event), do: Erlef.Community.Event.new_changeset(event)
@@ -51,13 +62,24 @@ defmodule Erlef.Community do
   @spec new_event(map()) :: Changeset.t()
   def new_event(params), do: Event.new_changeset(%Event{}, params)
 
-  @spec submit_event(params :: map()) :: {:ok, Event.t()} | {:error, term()}
-  def submit_event(params) do
-    with {:ok, event_params} <- maybe_upload_org_image(params),
-         %Changeset{} = cs <- Event.new_submission(event_params),
-         {:ok, cs} <- valid_changeset(cs) do
-      Repo.insert(cs)
-    end
+  @spec submit_event(params :: map(), opts :: map()) :: {:ok, Event.t()} | {:error, term()}
+  def submit_event(params, opts) do
+    Repo.transaction(fn ->
+      with {:ok, event_params} <- maybe_upload_org_image(params),
+           %Changeset{} = cs <- Event.new_submission(event_params),
+           {:ok, cs} <- valid_changeset(cs),
+           {:ok, event} <- Repo.insert(cs),
+           {:ok, _notify} <- Admins.notify(:new_event_submitted, opts),
+           {:ok, _notify} <- Members.notify(:new_event_submitted, opts) do
+        event
+      else
+        {:error, err} ->
+          Repo.rollback(err)
+
+        err ->
+          Repo.rollback(err)
+      end
+    end)
   end
 
   defp maybe_upload_org_image(%{"organizer_brand_logo" => %Plug.Upload{} = upload} = params) do
