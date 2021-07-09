@@ -8,12 +8,11 @@ defmodule Erlef.Community do
   alias Erlef.Community.Event
   alias Erlef.{Accounts, Admins, Members, Repo}
   alias Erlef.Accounts.Member
-  alias Erlef.Community.Resources
+  alias Erlef.Community.{Affiliates, Resources}
 
   defdelegate approved_events(), to: Query
   defdelegate event_types(), to: Event, as: :types
   defdelegate get_event(id), to: Query
-  defdelegate get_event_by_slug(slug), to: Query
   defdelegate unapproved_events(), to: Query
   defdelegate unapproved_events_count(), to: Query
 
@@ -23,6 +22,7 @@ defmodule Erlef.Community do
   """
 
   defdelegate all_resources(), to: Resources, as: :all
+  defdelegate all_affiliates(), to: Affiliates, as: :all
 
   @spec approve_event(UUID.t(), map()) :: {:ok, Event.t()} | {:error, Changeset.t()}
   def approve_event(id, params) do
