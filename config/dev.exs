@@ -19,8 +19,10 @@ config :erlef, ErlefWeb.Endpoint,
       "node_modules/webpack/bin/webpack.js",
       "--mode",
       "development",
-      "--watch-stdin",
-      cd: Path.expand("../assets", __DIR__)
+      "--watch",
+      "--watch-options-stdin",
+      cd: "assets",
+      env: [{"TAILWIND_MODE", "watch"}]
     ]
   ]
 

@@ -1,6 +1,11 @@
 defmodule ErlefWeb.ViewHelpers do
   @moduledoc "View Helpers"
 
+  def view_title(assigns) do
+    module = Phoenix.Controller.view_module(assigns.conn)
+    module.title(assigns)
+  end
+
   def author_name(["eef"]), do: "ErlEF"
 
   def author_name([name]), do: name
@@ -96,6 +101,10 @@ defmodule ErlefWeb.ViewHelpers do
 
   def logged_in?(assigns) do
     !!assigns[:current_user]
+  end
+
+  def allowed_to_post?(assigns) do
+    Erlef.Blog.categories_allowed_to_post(assigns.current_user) != []
   end
 
   def image_path(_conn, nil), do: ""
