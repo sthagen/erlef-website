@@ -303,5 +303,12 @@ config :erlef, :sponsors, [
     logo_url: "/images/sponsors/herrmann-ultraschall.png",
     name: "Herrmann Ultraschall",
     url: "https://www.herrmannultraschall.com/"
+  },
+  %{
+    active: true,
+    is_founding_sponsor: false,
+    logo_url: "/images/sponsors/wyeworks-logo.png",
+    name: "WyeWorks",
+    url: "https://www.wyeworks.com/"
   }
 ]
